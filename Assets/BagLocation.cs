@@ -5,26 +5,38 @@ using UnityEngine.UI;
 
 public class BagLocation : MonoBehaviour
 {
-    public bool willMove;
     public GameObject currentBag;
-    public Image image;
-    public Image flag;
-    public GameObject goBag;
-    
+    //public GameObject activeBag;
+    public BagLocation previousLocation;
+
     void Start()
     {
         currentBag = null;
+        //activeBag = null;
+        //GameEvents.current.onPushBags += pushBag;
+    }
+
+    public void SetPreviousBag(BagLocation bagLocation)
+    {
+        this.previousLocation = bagLocation;
     }
 
     public void pushBag(GameObject bag)
     {
-        currentBag = bag;
+        if (previousLocation != null)
+        {
+            currentBag = bag; //previousLocation.activeBag;
         
-        if (bag != null)
-        {   
-            bag.transform.position = this.transform.position;
-            bag.GetComponent<Bag>().CheckCapacity();
+            if (currentBag != null)
+            {
+                LeanTween.moveX(currentBag, this.transform.position.x, 1f);
+                if (currentBag.GetComponent<Bag>().CheckCapacity())
+                {
+                    GameEvents.current.FullBag(this);
+                }
+            }
         }
+        //this.activeBag = currentBag;
     }
 }
 

@@ -9,6 +9,7 @@ public class BagQueue : MonoBehaviour
     public float bagInterval;
     public List<BagLocation> bagPositions;
     private float timer;
+    public GameObject bagPrefab;
     public GameObject bag;
     public List<Bag> bags;
     private System.Random random;
@@ -20,16 +21,22 @@ public class BagQueue : MonoBehaviour
     public Sprite danish;
     public Sprite gold;
     
-    void Start()
+    public void Awake()
     {
         timer = bagInterval;
         random = new System.Random();
         maxBagNumber = bagPositions.Count;
+
+        for (int i = 1; i < bagPositions.Count; i++)
+        {
+            Debug.Log(i); Debug.Log(i - 1);
+            bagPositions[i].SetPreviousBag(bagPositions[i - 1]);
+        }
     }
 
     void Update()
     {
-        timer += Time.deltaTime; //Debug.Log("time: "+timer);
+        timer += Time.deltaTime;
         if (timer >= bagInterval)
         {
             AddBag(); timer = 0f;
@@ -38,7 +45,7 @@ public class BagQueue : MonoBehaviour
 
     public void AddBag()
     {
-        bag = GameObject.Instantiate(bag);
+        bag = GameObject.Instantiate(bagPrefab);
 
         List<LetterType> acceptedTypes = new List<LetterType>();
         LetterType accepted = (LetterType)random.Next(1, Enum.GetNames(typeof(LetterType)).Length);
@@ -52,7 +59,9 @@ public class BagQueue : MonoBehaviour
         currentBagNumber += 1;
         bagPositions[0].currentBag = bag;
 
-        for (int i = bagPositions.Count-1; i>0; i--)
+        //GameEvents.current.PushBags();
+
+        for (int i = bagPositions.Count - 1; i > 0; i--)
         {
             bagPositions[i].pushBag(bagPositions[i - 1].currentBag);
         }

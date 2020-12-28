@@ -49,11 +49,12 @@ public class Bag : MonoBehaviour
         CheckCapacity();
     }
 
-    public void CheckCapacity()
+    public bool CheckCapacity()
     {
         if (current == capacity)
         {
-
+            return true;
         }
+        return false;
     }
 }
